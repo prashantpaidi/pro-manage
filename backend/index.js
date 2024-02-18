@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const app = express();
 
+const authRoutes = require('./routes/userRoutes');
 dotenv.config();
 app.use(
   cors({
@@ -24,6 +25,8 @@ app.get('/health', (req, res) => {
 
   res.status(200).send(data);
 });
+
+app.use('/users', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('This is api for the Pro Manage app');
