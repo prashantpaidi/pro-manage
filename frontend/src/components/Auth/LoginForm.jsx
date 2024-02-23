@@ -27,20 +27,20 @@ export default function LoginForm() {
 
   const validateForm = () => {
     const errors = {};
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!formData.email) {
-        errors.email = 'Email is required';
-      } else if (!emailRegex.test(formData.email)) {
-        errors.email = 'Invalid email address';
-      }
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email)) {
+      errors.email = 'Invalid email address';
+    }
 
-      if (!formData.password) {
-        errors.password = 'Password is required';
-      } else if (formData.password.length < 8) {
-        // minimum password length is 8
-        errors.password = 'Password must be at least 8 characters long';
-      }
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      // minimum password length is 8
+      errors.password = 'Password must be at least 8 characters long';
+    }
 
     setErrors(errors);
     return Object.keys(errors).length === 0;
@@ -58,12 +58,18 @@ export default function LoginForm() {
       console.log(response);
       if (response) {
         localStorage.setItem('token', response.token);
-        localStorage.setItem('userName', response.name);
+        localStorage.setItem('name', response.user.name);
+        localStorage.setItem('id', response.user.id);
         navigate('/');
       }
     } catch (error) {
       console.error(error);
       // Handle error appropriately
+      if (error.error === 'Invalid email or password') {
+        setErrors({ server: 'Invalid email or password' });
+      } else {
+        setErrors({ server: 'Internal Server Error' });
+      }
     }
   };
 
@@ -114,7 +120,10 @@ export default function LoginForm() {
       {errors.password && (
         <span className={styles.errorText}>{errors.password}</span>
       )}
-      <button type='submit' onClick={handleSubmit}>
+      {errors.server && (
+        <span className={styles.errorText}>{errors.server}</span>
+      )}
+      <button type='submit' onClick={handleSubmit} className={styles.registerSubmit}>
         Log in
       </button>
       <p className={styles.registerText}>Have no account yet? </p>

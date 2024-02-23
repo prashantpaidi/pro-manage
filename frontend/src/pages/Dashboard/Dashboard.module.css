@@ -1,0 +1,10 @@
+.container {
+  /* width: -webkit-fill-available; */
+  background-color: #ffffff;
+  flex-grow: 1;
+}
+.infoContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 0px 20px;
+}

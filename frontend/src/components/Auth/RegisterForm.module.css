@@ -109,7 +109,7 @@
   background-image: url('/icon/emailIcon.svg') !important;
 }
 
-button[type='submit'] {
+.registerSubmit {
   color: #fff;
   padding: 10px 20px;
   border: none;

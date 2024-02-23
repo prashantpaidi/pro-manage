@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 
 export default function RegisterForm() {
   const navigate = useNavigate();
-
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
@@ -78,7 +77,11 @@ export default function RegisterForm() {
     } catch (error) {
       console.error(error);
       // Handle server-side errors
-      setErrors({ server: 'An error occurred. Please try again later.' });
+      if (error.error === 'email') {
+        setErrors({ email: error.message });
+      } else {
+        setErrors({ server: 'Internal Server Error' });
+      }
     }
   };
 
@@ -145,8 +148,8 @@ export default function RegisterForm() {
         <img src={passwordIcon} alt='lock' />
         <input
           type={isConfirmPasswordVisible ? 'text' : 'password'}
-          id='password'
-          name='password'
+          id='confirmPassword '
+          name='confirmPassword'
           required
           placeholder='Confirm Password'
           className={styles.passwordInput}
@@ -162,12 +165,18 @@ export default function RegisterForm() {
             style={{ fontSize: '35px' }}
             onClick={() => toggleConfirmPasswordVisibility()}
           />
-        )}{' '}
+        )}
       </div>
       {errors.confirmPassword && (
         <p className={styles.errorText}>{errors.confirmPassword}</p>
       )}
-      <button type='submit' onClick={handleSubmit}>
+
+      {errors.server && <p className={styles.errorText}>{errors.server}</p>}
+      <button
+        type='submit'
+        onClick={handleSubmit}
+        className={styles.registerSubmit}
+      >
         Register
       </button>
       <p className={styles.registerText}>Already have an account? </p>

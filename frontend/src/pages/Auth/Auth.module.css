@@ -79,17 +79,6 @@ label {
   display: block;
 }
 
-button[type='submit'] {
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 3.4455rem;
-  background: #17a2b8;
-  width: 100%;
-  border: 1.378px solid #17a2b8;
-}
-
 p {
   text-align: center;
   margin-top: 20px;

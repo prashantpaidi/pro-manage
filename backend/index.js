@@ -6,6 +6,7 @@ const cors = require('cors');
 const app = express();
 
 const authRoutes = require('./routes/userRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 dotenv.config();
 app.use(
   cors({
@@ -27,7 +28,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/users', authRoutes);
-
+app.use('/tasks', taskRoutes  );
 app.get('/', (req, res) => {
   res.send('This is api for the Pro Manage app');
 });
