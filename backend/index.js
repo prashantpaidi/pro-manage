@@ -28,7 +28,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/users', authRoutes);
-app.use('/tasks', taskRoutes  );
+app.use('/tasks', taskRoutes);
 app.get('/', (req, res) => {
   res.send('This is api for the Pro Manage app');
 });

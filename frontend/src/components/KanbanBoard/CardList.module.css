@@ -1,0 +1,27 @@
+.cardList {
+  width: 22.5rem;
+  height: 80vh;
+  overflow-y: scroll;
+  min-width: 22.5rem;
+  border-radius: 0.625rem;
+  background: #eef2f5;
+}
+
+.titleContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.titleText {
+  color: #000;
+
+  font-family: Poppins;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+
+  flex-grow: 1;
+}

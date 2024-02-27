@@ -13,8 +13,8 @@ const taskSchema = new mongoose.Schema({
   },
   taskType: {
     type: String,
-    default: 'todo',
-    enum: ['todo', 'Backlog', 'In progress', 'Done'],
+    default: 'To do',
+    enum: ['To do', 'Backlog', 'In progress', 'Done'],
     required: true,
   },
   due_date: Date,

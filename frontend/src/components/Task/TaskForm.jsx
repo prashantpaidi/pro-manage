@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { createTask } from '../../apis/tasks';
+import { createTask, updateTask } from '../../apis/tasks';
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { isLogin } from '../../utils/helpers';
 
 import deleteIcon from '../../assets/icons/delete.svg';
@@ -11,19 +11,24 @@ import { DatePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
 
 import styles from './TaskForm.module.css';
+import toast from 'react-hot-toast';
 
 const TaskForm = () => {
   let navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const { state } = useLocation();
+  const [edit, setEdit] = useState(false);
+  const [id, setId] = useState(null);
 
   const [taskData, setTaskData] = useState({
     title: '',
     priority: '',
     checklist: [],
-    taskType: 'todo',
+    taskType: 'To do',
     due_date: '',
     user: '',
   });
+
   useEffect(() => {
     // Call the isLogin function to check if user is logged in
     const loggedInUser = isLogin();
@@ -36,6 +41,21 @@ const TaskForm = () => {
       }));
     } else {
       navigate('/auth/login');
+    }
+
+    if (state && state.task) {
+      const { _id, title, priority, checklist, taskType, due_date } =
+        state.task;
+      setTaskData({
+        title,
+        priority,
+        checklist,
+        taskType,
+        due_date,
+        user: loggedInUser.id,
+      });
+      setEdit(true);
+      setId(_id);
     }
   }, []); // Empty dependency array to run the effect only once on component mount
 
@@ -94,29 +114,44 @@ const TaskForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if title, priority, and at least one checklist item are provided
-    if (
-      !taskData.title ||
-      !taskData.priority ||
-      taskData.checklist.length === 0
-    ) {
-      alert('Please fill in all required fields.');
+    if (!taskData.title) {
+      toast.error('Please fill in the title');
       return;
     }
 
-    // check if all ckecklist items are filled
+    if (!taskData.priority) {
+      toast.error('Please select a priority');
+      return;
+    }
+
+    if (taskData.checklist.length === 0) {
+      toast.error('Please add at least one checklist item');
+      return;
+    }
+
+    // Check if all checklist items are filled
     const isChecklistValid = taskData.checklist.every((item) => item.text);
     if (!isChecklistValid) {
-      alert('Please fill in all checklist items.');
+      toast.error('Please fill in all checklist items.');
       return;
     }
 
+    let newTaskData;
     try {
-      const createdTask = await createTask(taskData);
-      console.log('Task created successfully:', createdTask);
-      navigate('/');
+      if (edit) {
+        newTaskData = await updateTask(id, taskData);
+        console.log('Task updated successfully:', taskData);
+        navigate('/', { state: { replace: true, task: newTaskData } });
+      } else {
+        newTaskData = await createTask(taskData, user.token);
+        console.log('Task created successfully:', taskData);
+
+        navigate('/', { state: { newTask: true, task: newTaskData } });
+      }
+      toast.success('Task saved successfully.');
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error:', error);
+      toast.error('Internal Server Error. Please try again later.');
     }
   };
 
@@ -154,7 +189,6 @@ const TaskForm = () => {
               checked={taskData.priority === 'HIGH PRIORITY'}
               onChange={handleChange}
               className={styles.taskRadio}
-              required
             />
             <label
               htmlFor='highPriority'
@@ -184,7 +218,6 @@ const TaskForm = () => {
               value='MODERATE PRIORITY'
               checked={taskData.priority === 'MODERATE PRIORITY'}
               onChange={handleChange}
-              required
               className={styles.taskRadio}
             />
             <label
@@ -215,7 +248,6 @@ const TaskForm = () => {
               value='LOW PRIORITY'
               checked={taskData.priority === 'LOW PRIORITY'}
               onChange={handleChange}
-              required
               className={styles.taskRadio}
             />
             <label
@@ -252,7 +284,7 @@ const TaskForm = () => {
                 checked={item.done}
                 onChange={(e) => handleChecklistChange(e, index)}
                 className={styles.checkbox}
-                style={{ display: 'none' }} // Hide default checkbox
+                style={{ display: 'none' }}
               />
               <div
                 className={`${styles.customCheckbox} ${

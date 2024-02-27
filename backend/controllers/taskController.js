@@ -3,9 +3,18 @@ const Task = require('../models/Task');
 // Get all tasks
 const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
+    let startDate = req.query.startDate;
+    if (startDate) {
+      startDate = new Date(startDate);
+    }
+
+    const tasks = await Task.find({
+      user: req.params.userId,
+      createdAt: { $gte: startDate }, // Filter tasks created after the startDate
+    });
     res.json(tasks);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -70,9 +79,10 @@ const updateTask = async (req, res) => {
 // Delete a task
 const deleteTask = async (req, res) => {
   try {
+    console.log('id', req.params.id);
     const task = await Task.findById(req.params.id);
     if (task) {
-      await task.remove();
+      await Task.deleteOne({ _id: req.params.id });
       res.json({ message: 'Task deleted' });
     } else {
       res.status(404).json({ message: 'Task not found' });
