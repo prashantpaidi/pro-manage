@@ -7,4 +7,5 @@
   height: 100%;
   width: 80vw;
   overflow-x: scroll;
+  gap: 1.5rem;
 }

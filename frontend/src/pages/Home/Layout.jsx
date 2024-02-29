@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import logo from '../../assets/icons/logo.svg';
 import boardIcon from '../../assets/icons/board.svg';
@@ -8,9 +8,11 @@ import settingsIcon from '../../assets/icons/settings.svg';
 import logoutIcon from '../../assets/icons/logout.svg';
 
 import style from './Layout.module.css';
+import { isLogin } from '../../utils/helpers';
+import Modal from '../../components/UI/Modal';
 export default function Layout() {
   let location = useLocation();
-
+  const [showModal, setShowModal] = useState(false);
   console.log('location.pathname', location.pathname);
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem('token') !== null
@@ -21,9 +23,23 @@ export default function Layout() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-    navigate('/auth/login');
+    navigate('/auth/register');
+  };
+  const handleModalClose = () => {
+    setShowModal(false);
   };
 
+  const handleModalConfirm = () => {
+    handleLogout();
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    if (!isLogin()) {
+      setIsLoggedIn(false);
+      navigate('/auth/register');
+    }
+  }, []);
   return (
     <div className={style.mainContainer}>
       <div className={style.sideBar}>
@@ -53,9 +69,9 @@ export default function Layout() {
             Analytics
           </Link>
           <Link
-            to='/add-quiz'
+            to='/settings'
             className={`${style.activeBtn} ${
-              location.pathname === '/create-quiz' ? style.activeScreen : ''
+              location.pathname === '/settings' ? style.activeScreen : ''
             }`}
           >
             <img src={settingsIcon} />
@@ -65,13 +81,20 @@ export default function Layout() {
         <button
           className={style.logoutBtn}
           style={{ marginTop: '10px' }}
-          onClick={isLoggedIn ? handleLogout : () => navigate('/')}
+          onClick={() => setShowModal(true)}
         >
           <img src={logoutIcon} alt='' />
           {isLoggedIn ? 'Log out' : 'LOG IN'}
         </button>
       </div>
       <Outlet />
+      <Modal
+        isOpen={showModal}
+        onClose={handleModalClose}
+        onConfirm={handleModalConfirm}
+        heading='Are you sure you want to Logout?'
+        confirmText='Yes,  Logout'
+      />
     </div>
   );
 }

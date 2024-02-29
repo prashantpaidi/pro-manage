@@ -21,3 +21,23 @@ export const login = async (userData) => {
     throw error.response.data;
   }
 };
+
+export const updateNamePassword = async (userId, token, data) => {
+  console.log('token', token);
+  const { name, newPassword, oldPassword } = data;
+  const payload = {
+    name,
+    newPassword,
+    oldPassword,
+  };
+  try {
+    const response = await axios.put(`${API_URL}/users/${userId}`, payload, {
+      headers: {
+        authorization: `${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};

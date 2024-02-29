@@ -1,12 +1,11 @@
-import styles from './RegisterForm.module.css';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { BsEyeSlash, BsEye } from 'react-icons/bs';
-
 import passwordIcon from '../../assets/icons/passwordIcon.svg';
 import { register } from '../../apis/users';
-import { useNavigate } from 'react-router-dom';
+
+import styles from './RegisterForm.module.css';
 
 export default function RegisterForm() {
   const navigate = useNavigate();

@@ -1,0 +1,22 @@
+.card {
+  border-radius: 0.75rem;
+  border: 2px solid #edf5fe;
+
+  background: #fff;
+  margin: auto;
+  max-height: 80vh;
+}
+
+/* full page card responsive */
+
+@media (max-width: 768px) {
+  .card {
+    width: 90%;
+  }
+}
+
+@media (min-width: 769px) {
+  .card {
+    width: 40rem;
+  }
+}

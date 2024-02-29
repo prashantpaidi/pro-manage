@@ -21,7 +21,10 @@ export default function KanbanBoard({ startDate }) {
       setTasks((prevState) => {
         return prevState.map((item) => {
           if (item._id === state.task._id) {
-            return state.task;
+            return {
+              ...state.task,
+              isCollapsed: true,
+            };
           }
           return item;
         });
@@ -29,7 +32,13 @@ export default function KanbanBoard({ startDate }) {
     } else if (state && state.newTask) {
       // Add the new task to the tasks
       setTasks((prevState) => {
-        return [...prevState, state.task._id];
+        return [
+          ...prevState,
+          {
+            ...state.task,
+            isCollapsed: true,
+          },
+        ];
       });
     }
   }, [state]);
@@ -69,16 +78,10 @@ export default function KanbanBoard({ startDate }) {
       {listofTypes.map((type) => (
         <CardList key={type} taskData={tasks} type={type} setTasks={setTasks} />
       ))}
-      {/* {tasks ? <CardList taskData={tasks} type='Todo' /> : null}
-
-      <CardList taskData={tasks} type='todo' />
-      <CardList taskData={tasks} type='In Progress' />
-      <CardList taskData={tasks} type='Done' />
-      <CardList taskData={tasks} type='Backlog' /> */}
     </div>
   );
 }
 
 KanbanBoard.propTypes = {
-  startDate: PropTypes.string.isRequired,
+  startDate: PropTypes.instanceOf(Date).isRequired,
 };

@@ -128,6 +128,10 @@ const TaskForm = () => {
       toast.error('Please add at least one checklist item');
       return;
     }
+    if (!taskData.due_date || taskData.due_date === '') {
+      // Remove due date
+      delete taskData.due_date;
+    }
 
     // Check if all checklist items are filled
     const isChecklistValid = taskData.checklist.every((item) => item.text);
@@ -154,10 +158,6 @@ const TaskForm = () => {
       toast.error('Internal Server Error. Please try again later.');
     }
   };
-
-  useEffect(() => {
-    console.log('Task Data:', taskData);
-  }, [taskData]);
 
   return (
     <div className={styles.backGround}>

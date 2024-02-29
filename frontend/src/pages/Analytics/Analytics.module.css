@@ -1,0 +1,31 @@
+.card {
+  border-radius: 0.75rem;
+  background: #f9fcff;
+
+  padding: 16px;
+  margin: 16px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.taskGroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.taskGroup h4 {
+  color: #000;
+
+  font-family: 'Open Sans';
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.taskCount {
+  font-weight: bold;
+}

@@ -1,0 +1,92 @@
+.settingsForm {
+  width: 25rem;
+}
+.nameInput {
+  padding: 10px;
+  border-radius: 0.68913rem;
+  border: 1px solid #d0d0d0;
+
+  margin-top: 10px;
+  width: 100%;
+  background: #ffffff;
+  color: #828282;
+  font-family: 'Open Sans';
+  font-size: 1.20594rem;
+  font-weight: 400;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  padding: 12px 20px 12px 45px;
+}
+
+.nameInput {
+  background-position: 16px 14px !important;
+  background-image: url('/icon/avatar.svg') !important;
+}
+
+.passwordInput {
+  border: none;
+  background: none;
+  border: 0;
+  width: 100%;
+  background: #ffffff;
+  color: #828282;
+
+  border-radius: 0;
+  box-shadow: none;
+  float: left;
+  font-size: 17px;
+  padding: 0;
+  font-weight: 400;
+  box-sizing: border-box;
+
+  margin: 0;
+  font-family: 'Open Sans';
+  font-size: 1.20594rem;
+}
+
+.passwordInput:focus {
+  border: none !important;
+  outline: none !important;
+}
+
+.passwordInput:focus-visible {
+  border: none !important;
+  outline: none !important;
+}
+
+.passwordContainer {
+  padding: 10px;
+  border-radius: 0.68913rem;
+  border: 1px solid #d0d0d0;
+
+  margin-top: 10px;
+  width: 100%;
+  background: #ffffff;
+  color: #828282;
+  font-family: 'Open Sans';
+  font-size: 1.20594rem;
+  font-weight: 400;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  padding: 9px 10px 9px 10px;
+  display: flex;
+}
+
+.passwordContainer:focus {
+  border: thin solid black;
+  outline: none !important;
+}
+
+.submitButton {
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 3.4455rem;
+  background: #17a2b8;
+  width: 100%;
+  border: 1.378px solid #17a2b8;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 1.20594rem;
+}

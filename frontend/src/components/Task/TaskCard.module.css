@@ -95,6 +95,19 @@
 .redColor {
   color: #ff0000;
 }
+
+.redColorDate {
+  color: #ff0000;
+  font-family: Poppins;
+  font-size: 0.5rem;
+  font-weight: 500;
+  padding: 0.3125rem 0.625rem;
+}
+
+.isCollapsedicon {
+  margin-bottom: 2px;
+}
+
 .checklistTitleContainer {
   display: flex;
   align-items: center;

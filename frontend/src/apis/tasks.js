@@ -82,4 +82,36 @@ const getAllTasks = async (id, token, startDate) => {
   }
 };
 
-export { createTask, updateTask, deleteTask, getAllTasks };
+const fetchAnalyticsData = async (id, token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/tasks/analytics/${id}`, {
+      headers: {
+        authorization: `${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching analytics data:', error);
+    throw error;
+  }
+};
+
+// fetch one task
+const getTask = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/tasks/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching task:', error);
+    throw error;
+  }
+};
+
+export {
+  createTask,
+  updateTask,
+  deleteTask,
+  getAllTasks,
+  fetchAnalyticsData,
+  getTask,
+};

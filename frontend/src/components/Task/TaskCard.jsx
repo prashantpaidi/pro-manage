@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -13,10 +13,22 @@ import arrowDown from '../../assets/icons/arrowDown.svg';
 import arrowUp from '../../assets/icons/arrowUp.svg';
 
 import styles from './TaskCard.module.css';
+import Modal from '../UI/Modal';
 
 export default function TaskCard({ task, setTasksData }) {
   const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State to manage modal visibility
+  const [isDueDateExpired, setIsDueDateExpired] = useState(false);
+
+  useEffect(() => {
+    // Check if due date is expired
+    if (task.due_date) {
+      const currentDate = new Date();
+      const dueDate = new Date(task.due_date);
+      setIsDueDateExpired(dueDate < currentDate);
+    }
+  }, [task.due_date]);
 
   const handleToggleCollapse = () => {
     setTasksData((prevState) => {
@@ -60,7 +72,7 @@ export default function TaskCard({ task, setTasksData }) {
 
   const handleShare = () => {
     navigator.clipboard.writeText(
-      `${import.meta.env.VITE_APP_WEB_URL}/task/${task._id}`
+      `${import.meta.env.VITE_APP_WEB_URL}/view-task/${task._id}`
     );
     toast.success('Copied to clipboard');
     setShowOptions(false);
@@ -79,6 +91,21 @@ export default function TaskCard({ task, setTasksData }) {
       toast.error('Error deleting task');
     }
     setShowOptions(false);
+  };
+
+  const handleModalOpen = () => {
+    setShowModal(true);
+    setShowOptions(false); // Close options when modal is opened
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const handleModalConfirm = () => {
+    // Perform delete action when user confirms
+    handleDelete();
+    setShowModal(false);
   };
 
   return (
@@ -106,8 +133,10 @@ export default function TaskCard({ task, setTasksData }) {
               Share
             </button>
             <button
-              className={`${styles.optionsDropdownButton} ${styles.redColor}`}
-              onClick={handleDelete}
+              className={`${styles.optionsDropdownButton} ${
+                isDueDateExpired ? styles.redColorDate : ''
+              }`}
+              onClick={handleModalOpen}
             >
               Delete
             </button>
@@ -124,9 +153,17 @@ export default function TaskCard({ task, setTasksData }) {
           {')'}
           <button onClick={handleToggleCollapse}>
             {task.isCollapsed ? (
-              <img src={arrowDown} alt='Collapse' />
+              <img
+                src={arrowDown}
+                alt='Collapse'
+                className={styles.isCollapsedicon}
+              />
             ) : (
-              <img src={arrowUp} alt='Expand' />
+              <img
+                src={arrowUp}
+                alt='Expand'
+                className={styles.isCollapsedicon}
+              />
             )}
           </button>
         </div>
@@ -165,6 +202,13 @@ export default function TaskCard({ task, setTasksData }) {
           )}
         </div>
       </div>
+      <Modal
+        isOpen={showModal}
+        onClose={handleModalClose}
+        onConfirm={handleModalConfirm}
+        heading='Are you sure you want to Delete?'
+        confirmText='Yes, Delete'
+      />
     </div>
   );
 }
@@ -186,8 +230,8 @@ TaskCard.propTypes = {
     ).isRequired,
     taskType: PropTypes.oneOf(['To do', 'Backlog', 'In progress', 'Done'])
       .isRequired,
-    due_date: PropTypes.instanceOf(Date),
-    createdAt: PropTypes.instanceOf(Date).isRequired,
+    due_date: PropTypes.string,
+    createdAt: PropTypes.string.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
   }).isRequired,
   setTasksData: PropTypes.func.isRequired,

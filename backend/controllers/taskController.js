@@ -92,10 +92,73 @@ const deleteTask = async (req, res) => {
   }
 };
 
+// Function to get analytics data
+const getTaskAnalytics = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Get counts for different task types
+    const backlogCount = await Task.countDocuments({
+      user: userId,
+      taskType: 'Backlog',
+    });
+    const todoCount = await Task.countDocuments({
+      user: userId,
+      taskType: 'To do',
+    });
+    const inProgressCount = await Task.countDocuments({
+      user: userId,
+      taskType: 'In progress',
+    });
+
+    const doneCount = await Task.countDocuments({
+      user: userId,
+      taskType: 'Done',
+    });
+
+    // Get counts for tasks with due dates
+    const dueDateTasks = await Task.countDocuments({
+      user: userId,
+      due_date: { $exists: true },
+      taskType: { $ne: 'Done' },
+    });
+
+    // Get counts for tasks based on priority
+    const highPriorityCount = await Task.countDocuments({
+      user: userId,
+      priority: 'HIGH PRIORITY',
+    });
+    const moderatePriorityCount = await Task.countDocuments({
+      user: userId,
+      priority: 'MODERATE PRIORITY',
+    });
+    const lowPriorityCount = await Task.countDocuments({
+      user: userId,
+      priority: 'LOW PRIORITY',
+    });
+
+    // Send analytics data as response
+    res.json({
+      backlogTasks: backlogCount,
+      todoTasks: todoCount,
+      inProgressTasks: inProgressCount,
+      completedTasks: doneCount,
+      dueDateTasks: dueDateTasks,
+      highPriorityTasks: highPriorityCount,
+      moderatePriorityTasks: moderatePriorityCount,
+      lowPriorityTasks: lowPriorityCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getAllTasks,
   getTaskById,
   createTask,
   updateTask,
   deleteTask,
+  getTaskAnalytics,
 };
