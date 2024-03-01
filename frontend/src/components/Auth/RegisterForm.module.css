@@ -139,6 +139,7 @@ a {
   font-family: 'Open Sans';
   font-size: 1rem;
   font-weight: 400;
+  margin: 2rem 0 1rem 0;
 }
 
 .registerLink {
@@ -170,6 +171,7 @@ a {
 .loginLink:hover {
   background-color: #17a2b8;
   color: #fff;
+  text-decoration: none;
 }
 
 .errorText {
