@@ -71,7 +71,7 @@ export default function RegisterForm() {
       if (response) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('name', response.name);
-        navigate('/');
+        navigate('/auth/login');
       }
     } catch (error) {
       console.error(error);

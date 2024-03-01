@@ -37,31 +37,35 @@ export default function Settings() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.newPassword.length < 8) {
-      toast.error('New Password must be at least 8 characters long');
-      return;
-    }
     if (formData.name === '') {
       toast.error('Name is required');
       return;
     }
-    if (formData.oldPassword === '') {
-      toast.error('Old Password is required');
-      return;
-    }
-    if (formData.newPassword === '') {
-      toast.error('New Password is required');
-      return;
-    }
-    if (formData.oldPassword === formData.newPassword) {
-      toast.error('Old and New Password cannot be same');
-      return;
+
+    if (formData.oldPassword !== '' || formData.newPassword !== '') {
+      if (formData.newPassword.length < 8) {
+        toast.error('New Password must be at least 8 characters long');
+        return;
+      }
+      if (formData.oldPassword === '') {
+        toast.error('Old Password is required');
+        return;
+      }
+      if (formData.newPassword === '') {
+        toast.error('New Password is required');
+        return;
+      }
+      if (formData.oldPassword === formData.newPassword) {
+        toast.error('Old and New Password cannot be same');
+        return;
+      }
     }
 
     try {
       // call the API to update the user updateNamePassword
       await updateNamePassword(id, token, formData);
 
+      localStorage.setItem('name', formData.name);
       console.log(formData);
       toast.success('Form submitted successfully');
     } catch (error) {
@@ -94,7 +98,6 @@ export default function Settings() {
             type={isOldPasswordVisible ? 'text' : 'password'}
             id='oldPassword'
             name='oldPassword'
-            required
             placeholder='Old Password'
             onChange={handleChange}
             className={styles.passwordInput}
@@ -119,7 +122,6 @@ export default function Settings() {
             type={isNewPasswordVisible ? 'text' : 'password'}
             id='newPassword'
             name='newPassword'
-            required
             placeholder='New Password'
             className={styles.passwordInput}
             onChange={handleChange}

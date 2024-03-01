@@ -67,6 +67,10 @@ const updateTask = async (req, res) => {
       task.due_date = req.body.due_date || task.due_date;
       task.user = req.body.user || task.user;
 
+      if (req.body.oldDate && !req.body.due_date) {
+        // remove due_date
+        task.due_date = undefined;
+      }
       const updatedTask = await task.save();
       res.json(updatedTask);
     } else {
@@ -183,7 +187,7 @@ const getAllTasksGrouped = async (req, res) => {
     console.log('tasks', tasks);
 
     const groupedTasks = {
-      Backlog: [],  
+      Backlog: [],
       'To do': [],
       'In progress': [],
       Done: [],

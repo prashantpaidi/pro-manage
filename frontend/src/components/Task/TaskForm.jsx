@@ -49,14 +49,26 @@ const TaskForm = () => {
     if (state && state.task) {
       const { _id, title, priority, checklist, taskType, due_date } =
         state.task;
+
+      //  convert sting to date
+      let newDate = null;
+      if (due_date) {
+        newDate = new Date(due_date);
+      }
       setTaskData({
         title,
         priority,
         checklist,
         taskType,
-        due_date,
+        due_date: newDate,
         user: loggedInUser.id,
       });
+      if (newDate) {
+        setTaskData((prevState) => ({
+          ...prevState,
+          oldDate: true,
+        }));
+      }
       setEdit(true);
       setId(_id);
     }
@@ -69,6 +81,10 @@ const TaskForm = () => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    console.log('taskData', taskData);
+  }, [taskData]);
 
   const handleChecklistChange = (e, index) => {
     const { name, value, type, checked } = e.target;
@@ -148,6 +164,7 @@ const TaskForm = () => {
 
       if (edit) {
         newTaskData = await updateTask(id, taskData);
+        newTaskData.isCollapsed = true;
         console.log('Task updated successfully:', newTaskData);
         // Update the state for the updated task
         updateTasks((prevState) => {

@@ -78,16 +78,19 @@ const updateNamePassword = async (req, res) => {
 
     // Verify the old password
     console.log('oldPassword', oldPassword);
-    const passwordMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ message: 'Invalid old password' });
+    if (oldPassword !== '' && newPassword !== '') {
+      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ message: 'Invalid old password' });
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update the name and password
+      user.password = hashedPassword;
     }
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update the name and password
     user.name = name;
-    user.password = hashedPassword;
 
+    console.log(' user', user);
     // Save the updated user
     await user.save();
 

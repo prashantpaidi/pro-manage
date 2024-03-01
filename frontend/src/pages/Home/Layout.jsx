@@ -22,8 +22,11 @@ export default function Layout() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('id');
+    localStorage.removeItem('name');
+
     setIsLoggedIn(false);
-    navigate('/auth/register');
+    navigate('/auth/login');
   };
   const handleModalClose = () => {
     setShowModal(false);
@@ -78,10 +81,7 @@ export default function Layout() {
             Settings
           </Link>
         </div>
-        <button
-          className={style.logoutBtn}
-          onClick={() => setShowModal(true)}
-        >
+        <button className={style.logoutBtn} onClick={() => setShowModal(true)}>
           <img src={logoutIcon} alt='' />
           {isLoggedIn ? 'Log out' : 'LOG IN'}
         </button>
