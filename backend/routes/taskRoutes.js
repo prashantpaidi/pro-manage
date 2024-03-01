@@ -17,4 +17,11 @@ router.get(
   taskController.getTaskAnalytics
 );
 
+// Filtered tasks
+router.get(
+  '/grouped/user/:userId',
+  verifyAuthToken,
+  taskController.getAllTasksGrouped
+); // Get tasks grouped by type
+
 module.exports = router;

@@ -68,7 +68,7 @@ export default function ViewTask() {
                   <p className={styles.checklistItemTextInput}>{item.text}</p>
                 </div>
               ))}
-            </div>  
+            </div>
 
             {task.due_date && (
               <div className={styles.dueDateContainer}>

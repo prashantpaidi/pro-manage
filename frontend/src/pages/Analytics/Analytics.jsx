@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { isLogin } from '../../utils/helpers';
 import { fetchAnalyticsData } from '../../apis/tasks';
 import BlueDot from '../../assets/icons/blueDot.svg';

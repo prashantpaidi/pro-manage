@@ -5,18 +5,27 @@ import TaskCard from '../Task/TaskCard';
 import CollapseAll from '../../assets/icons/collapseAll.svg';
 import Add from '../../assets/icons/add.svg';
 
+import { useTaskContext } from '../../context/taskContext';
+
 import styles from './CardList.module.css';
 
-export default function CardList({ taskData, type, setTasks }) {
+export default function CardList({ type }) {
   const navigate = useNavigate();
+
+  const { tasks, updateTasks } = useTaskContext();
+  
   const handleCollapseAll = () => {
-    setTasks((prevState) => {
-      return prevState.map((item) => {
-        if (item.taskType === type) {
-          return { ...item, isCollapsed: true };
+    updateTasks((prevState) => {
+      const updatedState = { ...prevState };
+      for (const taskType in updatedState) {
+        if (taskType === type) {
+          updatedState[taskType] = updatedState[taskType].map((item) => ({
+            ...item,
+            isCollapsed: true,
+          }));
         }
-        return item;
-      });
+      }
+      return updatedState;
     });
   };
 
@@ -32,17 +41,13 @@ export default function CardList({ taskData, type, setTasks }) {
         <img src={CollapseAll} onClick={handleCollapseAll} />
       </div>
 
-      {taskData
-        .filter((task) => task.taskType === type)
-        .map((task) => (
-          <TaskCard key={task._id} task={task} setTasksData={setTasks} />
-        ))}
+      {tasks[type].map((task) => (
+        <TaskCard key={task._id} task={task} />
+      ))}
     </div>
   );
 }
 
 CardList.propTypes = {
-  taskData: PropTypes.array.isRequired,
   type: PropTypes.string.isRequired,
-  setTasks: PropTypes.func.isRequired,
 };

@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const mongoose = require('mongoose');
 
 // Get all tasks
 const getAllTasks = async (req, res) => {
@@ -154,6 +155,51 @@ const getTaskAnalytics = async (req, res) => {
   }
 };
 
+const getAllTasksGrouped = async (req, res) => {
+  try {
+    let startDate = req.query.startDate;
+    const userId = req.params.userId;
+
+    console.log('userId', userId);
+    const matchQuery = { user: new mongoose.Types.ObjectId(userId) }; // Cast userId to ObjectId
+
+    // const matchQuery = {};
+    if (startDate) {
+      matchQuery.createdAt = { $gte: new Date(startDate) };
+    }
+    console.log('userId:', userId);
+    console.log('matchQuery:', matchQuery);
+
+    const tasks = await Task.aggregate([
+      { $match: matchQuery },
+      {
+        $group: {
+          _id: '$taskType',
+          tasks: { $push: '$$ROOT' },
+        },
+      },
+    ]);
+
+    console.log('tasks', tasks);
+
+    const groupedTasks = {
+      Backlog: [],  
+      'To do': [],
+      'In progress': [],
+      Done: [],
+    };
+
+    tasks.forEach((taskGroup) => {
+      groupedTasks[taskGroup._id] = taskGroup.tasks;
+    });
+
+    res.json(groupedTasks);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllTasks,
   getTaskById,
@@ -161,4 +207,5 @@ module.exports = {
   updateTask,
   deleteTask,
   getTaskAnalytics,
+  getAllTasksGrouped,
 };

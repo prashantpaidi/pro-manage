@@ -67,14 +67,17 @@ const deleteTask = async (taskId, token) => {
 const getAllTasks = async (id, token, startDate) => {
   console.log('startDate', startDate);
   try {
-    const response = await axios.get(`${API_BASE_URL}/tasks/user/${id}`, {
-      headers: {
-        authorization: `${token}`,
-      },
-      params: {
-        startDate: startDate,
-      },
-    });
+    const response = await axios.get(
+      `${API_BASE_URL}/tasks/grouped/user/${id}`,
+      {
+        headers: {
+          authorization: `${token}`,
+        },
+        params: {
+          startDate: startDate,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error getting all tasks:', error);

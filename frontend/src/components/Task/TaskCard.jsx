@@ -14,8 +14,12 @@ import arrowUp from '../../assets/icons/arrowUp.svg';
 
 import styles from './TaskCard.module.css';
 import Modal from '../UI/Modal';
+import { useTaskContext } from '../../context/taskContext';
+import Priority from '../UI/Priority';
 
-export default function TaskCard({ task, setTasksData }) {
+export default function TaskCard({ task }) {
+  const { tasks, updateTasks } = useTaskContext();
+
   const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
   const [showModal, setShowModal] = useState(false); // State to manage modal visibility
@@ -32,32 +36,59 @@ export default function TaskCard({ task, setTasksData }) {
   }, [task.due_date]);
 
   const handleToggleCollapse = () => {
-    setTasksData((prevState) => {
-      return prevState.map((item) => {
-        if (item._id === task._id) {
-          return { ...item, isCollapsed: !item.isCollapsed };
-        }
-        return item;
-      });
+    // setTasksData((prevState) => {
+    //   return prevState.map((item) => {
+    //     if (item._id === task._id) {
+    //       return { ...item, isCollapsed: !item.isCollapsed };
+    //     }
+    //     return item;
+    //   });
+    // });
+
+    // console.log('task', task);
+    // console.log('tasks', tasks);
+
+    updateTasks((prevState) => {
+      return {
+        ...prevState,
+        [task.taskType]: prevState[task.taskType].map((item) => {
+          if (item._id === task._id) {
+            return { ...item, isCollapsed: !item.isCollapsed };
+          }
+          return item;
+        }),
+      };
     });
   };
 
-  const handleCurrentTypeChange = (currentType) => {
-    // updae database
+  const handleCurrentTypeChange = async (currentType) => {
     try {
-      updateTask(task._id, { taskType: currentType });
+      // Update task type in the database
+      await updateTask(task._id, { taskType: currentType });
+
+      // Update local state using updateTasks
+      updateTasks((prevState) => {
+        const updatedTasks = { ...prevState };
+        const index = updatedTasks[task.taskType].findIndex(
+          (item) => item._id === task._id
+        );
+
+        if (index !== -1) {
+          updatedTasks[task.taskType].splice(index, 1);
+
+          updatedTasks[currentType].push({ ...task, taskType: currentType });
+        }
+
+        return updatedTasks;
+      });
+
+      // Show success message
+      toast.success('Task type updated successfully');
     } catch (error) {
+      // Handle errors
+      console.error('Error updating task type:', error);
       toast.error('Error updating task type');
     }
-
-    setTasksData((prevState) => {
-      return prevState.map((item) => {
-        if (item._id === task._id) {
-          return { ...item, taskType: currentType };
-        }
-        return item;
-      });
-    });
   };
 
   const handleOptionsToggle = () => {
@@ -83,9 +114,14 @@ export default function TaskCard({ task, setTasksData }) {
     // Handle delete functionality
     try {
       await deleteTask(task._id);
-      setTasksData((prevState) =>
-        prevState.filter((item) => item._id !== task._id)
-      );
+      updateTasks((prevState) => {
+        return {
+          ...prevState,
+          [task.taskType]: prevState[task.taskType].filter(
+            (item) => item._id !== task._id
+          ),
+        };
+      });
       toast.success('Task deleted successfully');
     } catch (error) {
       console.error('Error deleting task:', error);
@@ -112,7 +148,10 @@ export default function TaskCard({ task, setTasksData }) {
   return (
     <div className={styles.taskCard} key={task._id}>
       <div className={styles.taskPriorityContainer}>
-        <p className={styles.taskPriority}>{task.priority}</p>
+        <p className={styles.taskPriority}>
+          <Priority priority={task.priority} />
+          {/* {task.priority} */}
+        </p>
         <button
           onClick={handleOptionsToggle}
           className={styles.transparentButton}
@@ -246,5 +285,5 @@ TaskCard.propTypes = {
     createdAt: PropTypes.string.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
   }).isRequired,
-  setTasksData: PropTypes.func.isRequired,
+  // setTasksData: PropTypes.func.isRequired,
 };

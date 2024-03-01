@@ -15,7 +15,13 @@
   word-wrap: break-word;
   line-height: normal;
 }
+.taskPriority {
+  color: #707070;
 
+  font-family: Poppins;
+  font-size: 0.5rem;
+  font-weight: 500;
+}
 .taskPriorityContainer {
   display: flex;
   align-items: center;

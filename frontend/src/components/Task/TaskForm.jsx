@@ -12,9 +12,12 @@ import 'rsuite/dist/rsuite.min.css';
 
 import styles from './TaskForm.module.css';
 import toast from 'react-hot-toast';
+import { useTaskContext } from '../../context/taskContext';
 
 const TaskForm = () => {
   let navigate = useNavigate();
+  const { tasks, updateTasks } = useTaskContext();
+
   const [user, setUser] = useState(null);
   const { state } = useLocation();
   const [edit, setEdit] = useState(false);
@@ -140,19 +143,39 @@ const TaskForm = () => {
       return;
     }
 
-    let newTaskData;
     try {
+      let newTaskData;
+
       if (edit) {
         newTaskData = await updateTask(id, taskData);
-        console.log('Task updated successfully:', taskData);
-        navigate('/', { state: { replace: true, task: newTaskData } });
+        console.log('Task updated successfully:', newTaskData);
+        // Update the state for the updated task
+        updateTasks((prevState) => {
+          const updatedState = { ...prevState };
+          for (const taskType in updatedState) {
+            updatedState[taskType] = updatedState[taskType].map((item) =>
+              item._id === newTaskData._id ? newTaskData : item
+            );
+          }
+          return updatedState;
+        });
       } else {
         newTaskData = await createTask(taskData, user.token);
-        console.log('Task created successfully:', taskData);
-
-        navigate('/', { state: { newTask: true, task: newTaskData } });
+        console.log('Task created successfully:', newTaskData);
+        // Add the new task to the appropriate task type in the state
+        updateTasks((prevState) => {
+          const updatedState = { ...prevState };
+          updatedState[newTaskData.taskType] = [
+            ...updatedState[newTaskData.taskType],
+            newTaskData,
+          ];
+          return updatedState;
+        });
       }
+
       toast.success('Task saved successfully.');
+      // Navigate to the homepage after successful operation
+      navigate('/');
     } catch (error) {
       console.error('Error:', error);
       toast.error('Internal Server Error. Please try again later.');
@@ -172,7 +195,7 @@ const TaskForm = () => {
           value={taskData.title}
           onChange={handleChange}
           required
-            className={styles.taskNameInput}
+          className={styles.taskNameInput}
           placeholder='Enter Task Title'
         />
 

@@ -65,8 +65,12 @@ export default function Settings() {
       console.log(formData);
       toast.success('Form submitted successfully');
     } catch (error) {
-      console.log('error', error);
-      toast.error('Error updating user');
+      if (error.message === 'Invalid old password') {
+        toast.error('Invalid old password');
+      } else {
+        console.log('error', error);
+        toast.error('Error updating user');
+      }
     }
   };
 
