@@ -29,8 +29,11 @@ export default function TaskCard({ task }) {
     // Check if due date is expired
     if (task.due_date) {
       const currentDate = new Date();
+      const currentDateMinusOneDay = new Date(currentDate);
+      currentDateMinusOneDay.setDate(currentDateMinusOneDay.getDate() - 1);
       const dueDate = new Date(task.due_date);
-      setIsDueDateExpired(dueDate < currentDate);
+      // Set due date expired if due date is before current date
+      setIsDueDateExpired(dueDate < currentDateMinusOneDay);
       console.log('isDueDateExpired', isDueDateExpired);
     }
   }, [task.due_date]);
@@ -245,14 +248,6 @@ export default function TaskCard({ task }) {
         {!task.isCollapsed &&
           task.checklist.map((item, index) => (
             <div key={index} className={styles.checklistItem}>
-              <input
-                type='checkbox'
-                name='done'
-                checked={item.done}
-                onChange={(e) => handleChecklistChange(e, index)}
-                className={styles.checkbox}
-                style={{ display: 'none' }}
-              />
               <div
                 className={`${styles.customCheckbox} ${
                   item.done ? `${styles.checked}` : ''
