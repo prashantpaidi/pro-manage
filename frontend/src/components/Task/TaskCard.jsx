@@ -145,6 +145,33 @@ export default function TaskCard({ task }) {
     setShowModal(false);
   };
 
+  const handleChecklistCheckBoxChange = async (index) => {
+    try {
+      const updatedChecklist = [...task.checklist];
+      updatedChecklist[index].done = !updatedChecklist[index].done;
+
+      // Update checklist in the database
+      await updateTask(task._id, { checklist: updatedChecklist });
+
+      updateTasks((prevState) => {
+        return {
+          ...prevState,
+          [task.taskType]: prevState[task.taskType].map((item) => {
+            if (item._id === task._id) {
+              return { ...item, checklist: updatedChecklist };
+            }
+            return item;
+          }),
+        };
+      });
+
+      toast.success('Checklist item updated successfully');
+    } catch (error) {
+      console.error('Error updating checklist item:', error);
+      toast.error('Error updating checklist item');
+    }
+  };
+
   return (
     <div className={styles.taskCard} key={task._id}>
       <div className={styles.taskPriorityContainer}>
@@ -215,10 +242,19 @@ export default function TaskCard({ task }) {
         {!task.isCollapsed &&
           task.checklist.map((item, index) => (
             <div key={index} className={styles.checklistItem}>
+              <input
+                type='checkbox'
+                name='done'
+                checked={item.done}
+                onChange={(e) => handleChecklistChange(e, index)}
+                className={styles.checkbox}
+                style={{ display: 'none' }}
+              />
               <div
                 className={`${styles.customCheckbox} ${
                   item.done ? `${styles.checked}` : ''
                 }`}
+                onClick={(e) => handleChecklistCheckBoxChange(index)}
               />
 
               <p className={styles.checklistItemTextInput}>{item.text}</p>
