@@ -161,6 +161,7 @@ const TaskForm = () => {
         });
       } else {
         newTaskData = await createTask(taskData, user.token);
+        newTaskData.isCollapsed = true;
         console.log('Task created successfully:', newTaskData);
         // Add the new task to the appropriate task type in the state
         updateTasks((prevState) => {

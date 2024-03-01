@@ -58,6 +58,12 @@
 
 @media screen and (max-height: 751px) {
   .cardList {
-    height: 70vh;
+    height: 69vh;
+  }
+}
+
+@media screen and (max-height: 650px) {
+  .cardList {
+    height: 66vh;
   }
 }

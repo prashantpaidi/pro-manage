@@ -68,6 +68,17 @@
   text-decoration: none;
   color: #000;
 }
+.activeBtn:active {
+  background: #eeeeee;
+  text-decoration: none;
+  color: #000;
+}
+
+.activeBtn:focus {
+  background: #eeeeee;
+  text-decoration: none;
+  color: #000;
+}
 
 .activeScreen {
   border-radius: 0px;

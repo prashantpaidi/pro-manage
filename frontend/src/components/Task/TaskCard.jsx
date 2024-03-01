@@ -223,7 +223,10 @@ export default function TaskCard({ task }) {
           {task.checklist.filter((item) => item.done).length}/
           {task.checklist.length}
           {')'}
-          <button onClick={handleToggleCollapse}>
+          <button
+            onClick={handleToggleCollapse}
+            style={{ borderRadius: '0.2rem' }}
+          >
             {task.isCollapsed ? (
               <img
                 src={arrowDown}
