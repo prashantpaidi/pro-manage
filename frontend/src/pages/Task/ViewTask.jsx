@@ -1,9 +1,11 @@
-import styles from './ViewTask.module.css';
 import logo from '../../assets/icons/logo.svg';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getTask } from '../../apis/tasks';
 import Priority from '../../components/UI/Priority';
+import { formatDateMonD } from '../../utils/helpers';
+
+import styles from './ViewTask.module.css';
 
 export default function ViewTask() {
   const { taskId } = useParams();
@@ -34,7 +36,7 @@ export default function ViewTask() {
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       <div className={styles.logo}>
         <img src={logo} />
         Pro Manage
@@ -45,19 +47,37 @@ export default function ViewTask() {
           <p>Loading...</p>
         ) : (
           <>
-            <h2>{task.title}</h2>
-            <p>
+            <p className={styles.priority}>
               <Priority priority={task.priority} />
             </p>
-            <p>Checklist:</p>
-            <ul>
+            <h2 className={styles.title}>{task.title}</h2>
+            <p className={styles.checklistText}>
+              Checklist:{' '}
+              {'(' + task.checklist.filter((item) => item.done).length}/
+              {task.checklist.length + ')'}
+            </p>
+            <div className={styles.checklistContainer}>
               {task.checklist.map((item, index) => (
-                <li key={index} className={item.done ? styles.checked : ''}>
-                  {item.text}
-                </li>
+                <div key={index} className={styles.checklistItem}>
+                  <div
+                    className={`${styles.customCheckbox} ${
+                      item.done ? `${styles.checked}` : ''
+                    }`}
+                  />
+
+                  <p className={styles.checklistItemTextInput}>{item.text}</p>
+                </div>
               ))}
-            </ul>
-            {task.due_date && <p>Due Date: {task.due_date}</p>}
+            </div>  
+
+            {task.due_date && (
+              <div className={styles.dueDateContainer}>
+                <span className={styles.dueDateText}>Due Date: </span>
+                <span className={styles.dueDate}>
+                  {formatDateMonD(task.due_date)}
+                </span>
+              </div>
+            )}
           </>
         )}
       </div>

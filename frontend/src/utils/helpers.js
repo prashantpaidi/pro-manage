@@ -9,12 +9,12 @@ export const isLogin = () => {
 export const formatDate = (date) => {
   return (
     new Date(date).getDate() +
-    ' ' +
+    'th ' +
     new Date(date).toLocaleString('en-US', {
       month: 'short',
     }) +
     ', ' +
-    new Date(date).getFullYear().toString().slice(-2)
+    new Date(date).getFullYear().toString()
   );
 };
 

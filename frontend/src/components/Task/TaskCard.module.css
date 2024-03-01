@@ -12,6 +12,8 @@
   font-size: 1.125rem;
   font-weight: 500;
   margin-bottom: 10px;
+  word-wrap: break-word;
+  line-height: normal;
 }
 
 .taskPriorityContainer {
@@ -97,13 +99,22 @@
 }
 
 .redColorDate {
-  color: #ff0000;
+  color: #fff;
   font-family: Poppins;
   font-size: 0.5rem;
+  background: #cf3636;
+
   font-weight: 500;
-  padding: 0.3125rem 0.625rem;
 }
 
+.greenColorDate {
+  color: #fff;
+  font-family: Poppins;
+  font-size: 0.5rem;
+  background: #63c05b;
+
+  font-weight: 500;
+}
 .isCollapsedicon {
   margin-bottom: 2px;
 }

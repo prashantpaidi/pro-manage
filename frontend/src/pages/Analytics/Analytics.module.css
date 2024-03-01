@@ -1,11 +1,29 @@
+.container {
+  padding: 1.5rem 2.5rem;
+}
+
 .card {
   border-radius: 0.75rem;
   background: #f9fcff;
 
-  padding: 16px;
-  margin: 16px;
+  padding: 2.5rem 2rem;
+  /* margin: 16px; */
+  width: 25rem;
 }
 
+.cardContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;  
+}
+
+.title {
+  color: #000;
+
+  font-family: 'Open Sans';
+  font-size: 1.375rem;
+  font-weight: 600;
+}
 .cardBody {
   display: flex;
   flex-direction: column;
@@ -21,11 +39,17 @@
   color: #000;
 
   font-family: 'Open Sans';
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-style: normal;
   font-weight: 400;
+  flex-grow: 1;
+  margin-left: 0.75rem;
 }
 
 .taskCount {
-  font-weight: bold;
+  color: #000;
+  font-family: 'Open Sans';
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 600;
 }

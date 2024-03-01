@@ -27,6 +27,7 @@ export default function TaskCard({ task, setTasksData }) {
       const currentDate = new Date();
       const dueDate = new Date(task.due_date);
       setIsDueDateExpired(dueDate < currentDate);
+      console.log('isDueDateExpired', isDueDateExpired);
     }
   }, [task.due_date]);
 
@@ -133,9 +134,7 @@ export default function TaskCard({ task, setTasksData }) {
               Share
             </button>
             <button
-              className={`${styles.optionsDropdownButton} ${
-                isDueDateExpired ? styles.redColorDate : ''
-              }`}
+              className={`${styles.optionsDropdownButton} `}
               onClick={handleModalOpen}
             >
               Delete
@@ -143,7 +142,14 @@ export default function TaskCard({ task, setTasksData }) {
           </div>
         )}
       </div>
-      <h2 className={styles.taskTitle}>{task.title}</h2>
+      <h2
+        className={styles.taskTitle}
+        title={task.title.length > 45 ? task.title : null}
+      >
+        {task.title.length > 45
+          ? `${task.title.substring(0, 45)}...`
+          : task.title}
+      </h2>
       {/* taskChecklist */}
       <div className={styles.taskChecklist}>
         <div className={styles.checklistTitleContainer}>
@@ -183,7 +189,13 @@ export default function TaskCard({ task, setTasksData }) {
       {/* taskChecklist */}
       <div className={styles.taskDetailsContainer}>
         {task.due_date && (
-          <p className={styles.taskDueDate}>{formatDateMonD(task.due_date)}</p>
+          <p
+            className={`${styles.taskDueDate} ${
+              isDueDateExpired ? styles.redColorDate : ''
+            } ${task.taskType === 'Done' ? styles.greenColorDate : ''}`}
+          >
+            {formatDateMonD(task.due_date)}
+          </p>
         )}
         <div className={styles.listofTypes}>
           {listofTypes.map(

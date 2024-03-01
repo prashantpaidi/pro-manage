@@ -71,7 +71,7 @@ export default function Settings() {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <h1 className={styles.heading}>Settings</h1>
       <form className={styles.settingsForm} onSubmit={handleSubmit}>
         <input

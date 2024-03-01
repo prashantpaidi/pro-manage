@@ -3,15 +3,19 @@ import KanbanBoard from '../../components/KanbanBoard/KanbanBoard';
 import { formatDate } from '../../utils/helpers';
 import { useState } from 'react';
 
+import ArrowDown from '../../assets/icons/arrowDown.svg';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
-  const name = localStorage.getItem('name');
-  const today = new Date().toLocaleDateString();
+  const [showOptions, setShowOptions] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState('This Week');
 
-  const handleTimeframeChange = (e) => {
-    setSelectedTimeframe(e.target.value);
+  const name = localStorage.getItem('name');
+  const today = new Date().toLocaleDateString();
+
+  const handleTimeframeChange = (timeframe) => {
+    setSelectedTimeframe(timeframe);
+    setShowOptions(false); // Close dropdown after selection
   };
 
   let startDate;
@@ -26,23 +30,50 @@ export default function Dashboard() {
     startDate.setDate(startDate.getDate() - 1);
   }
 
+  const handleOptionsToggle = () => {
+    setShowOptions(!showOptions);
+  };
+
   return (
     <div className={styles.container}>
-      <div className={styles.infoContainer}>
+      <div className={`${styles.infoContainer} ${styles.firstContainer}`}>
         <p className={styles.userName}>Welcome! {name}</p>
-        <p className={styles.userName}>{formatDate(today)}</p>
+        <p className={styles.todaysDate}>{formatDate(today)}</p>
       </div>
       <div className={styles.infoContainer}>
-        <p className={styles.userName}>Board</p>
-        <select
-          className={styles.dropdown}
-          value={selectedTimeframe}
-          onChange={handleTimeframeChange}
-        >
-          <option value='Today'>Today</option>
-          <option value='This Week'>This Week</option>
-          <option value='This Month'>This Month</option>
-        </select>
+        <p className={styles.boardText}>Board</p>
+
+        <div className={styles.dropDownBtnContainer}>
+          <button
+            onClick={handleOptionsToggle}
+            className={styles.transparentButton}
+          >
+            {selectedTimeframe + ' '}
+            <img src={ArrowDown} alt='Arrow' />
+          </button>
+          {showOptions && (
+            <div className={styles.optionsDropdown}>
+              <button
+                className={styles.optionsDropdownButton}
+                onClick={() => handleTimeframeChange('Today')}
+              >
+                Today
+              </button>
+              <button
+                className={styles.optionsDropdownButton}
+                onClick={() => handleTimeframeChange('This Week')}
+              >
+                This Week
+              </button>
+              <button
+                className={styles.optionsDropdownButton}
+                onClick={() => handleTimeframeChange('This Month')}
+              >
+                This Month
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <KanbanBoard startDate={startDate} />
 

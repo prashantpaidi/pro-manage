@@ -16,7 +16,6 @@
   background: #fff;
 }
 
-
 .sideBar hr {
   margin: auto 0 10px 0;
   border: none;
@@ -46,6 +45,7 @@
   gap: 1rem;
   width: -webkit-fill-available;
   flex-grow: 1;
+  margin-top: 20px;
 }
 
 .activeBtn {
@@ -65,6 +65,8 @@
 
 .activeBtn:hover {
   background: #eeeeee;
+  text-decoration: none;
+  color: #000;
 }
 
 .activeScreen {
@@ -91,6 +93,7 @@
   gap: 1rem;
   padding: 0.5rem 1rem;
   padding-left: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .mainContainer {
@@ -99,4 +102,29 @@
   display: flex;
   flex-direction: row;
   gap: 1rem;
+}
+
+/* less than 1024px */
+@media screen and (max-width: 1024px) {
+  .sideBar {
+    width: 21vw;
+    min-width: 21vw;
+  }
+}
+
+/* greather than 1400px */
+@media screen and (min-width: 1400px) {
+  .sideBar {
+    width: 15vw;
+    min-width: 15vw;
+  }
+  .logo {
+    padding-left: 2.5rem;
+  }
+  .activeBtn {
+    padding-left: 2.5rem;
+  }
+  .logoutBtn {
+    padding-left: 2.7rem;
+  }
 }

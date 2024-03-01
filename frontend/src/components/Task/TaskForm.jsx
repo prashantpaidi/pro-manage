@@ -172,7 +172,7 @@ const TaskForm = () => {
           value={taskData.title}
           onChange={handleChange}
           required
-          className={styles.taskNameInput}
+            className={styles.taskNameInput}
           placeholder='Enter Task Title'
         />
 

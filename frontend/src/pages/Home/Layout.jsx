@@ -80,7 +80,6 @@ export default function Layout() {
         </div>
         <button
           className={style.logoutBtn}
-          style={{ marginTop: '10px' }}
           onClick={() => setShowModal(true)}
         >
           <img src={logoutIcon} alt='' />

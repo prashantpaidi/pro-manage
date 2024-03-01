@@ -1,22 +1,194 @@
+.container {
+  padding: 1rem;
+}
+
 .card {
   border-radius: 0.75rem;
   border: 2px solid #edf5fe;
 
   background: #fff;
   margin: auto;
-  max-height: 80vh;
+  height: 68vh;
+  padding: 3.875rem 2.0625rem;
+  margin-top: 4rem;
 }
 
-/* full page card responsive */
+.logo {
+  color: #000;
 
+  font-family: Poppins;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.priority {
+  color: #707070;
+  font-family: Poppins;
+  font-size: 0.5rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.title {
+  color: #000;
+
+  font-family: Poppins;
+  font-size: 1.375rem;
+  font-weight: 500;
+}
+
+.checklistText {
+  color: #000;
+  font-family: Inter;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+}
+.checklistContainer {
+  max-height: 58vh;
+  overflow-y: scroll;
+  margin-right: -28px;
+  padding-right: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.checklistTitleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.checklistItem {
+  border-radius: 0.75rem;
+  border: 1px solid #e2e2e2;
+  display: flex;
+  flex-direction: row;
+  padding: 0.75rem;
+  /* margin: 0.6rem 0; */
+}
+
+.customCheckbox {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6.5px;
+}
+
+.customCheckbox::after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+
+.customCheckbox.checked {
+  background-color: #17a2b8;
+}
+.dueDateText {
+  color: #000;
+
+  font-family: Poppins;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+.dueDate {
+  border-radius: 0.5rem;
+  background: #cf3636;
+  color: #fff;
+  font-family: Poppins;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 500;
+  padding: 0.25rem 0.625rem;
+}
+.customCheckbox.checked::after {
+  display: block;
+  content: '';
+  width: 5px;
+  height: 11px;
+  border: solid rgb(255, 255, 255);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  top: 2px;
+  left: 6px;
+}
+
+.checklistItemTextInput {
+  margin-left: 5px;
+  color: #000;
+  font-family: Inter;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.dueDateContainer {
+  margin: 1rem 0 2.5rem 0;
+}
+
+/*  */
 @media (max-width: 768px) {
   .card {
-    width: 90%;
+    width: 95%;
+    padding: 1.5rem 2rem;
+    box-sizing: border-box;
+    margin-top: 2rem;
+    height: 98%;
+  }
+  .container {
+    padding: 1rem 0.5rem;
+  }
+  .logo {
+    margin-bottom: 0.5rem;
   }
 }
 
+/* larger than  */
 @media (min-width: 769px) {
   .card {
     width: 40rem;
+  }
+  .container {
+    padding: 1.5rem;
+  }
+}
+
+/* height less than   800px */
+@media (max-height: 800px) {
+  .checklistContainer {
+    max-height: 56vh;
+  }
+}
+
+/* height less than   750px */
+@media (max-height: 750px) {
+  .checklistContainer {
+    max-height: 55vh;
+  }
+}
+/* height less than   700px */
+@media (max-height: 700px) {
+  /* .card {
+    height: 60vh;
+  } */
+  .checklistContainer {
+    max-height: 54vh;
+  }
+}
+/* height less than   650px */
+@media (max-height: 650px) {
+  .checklistContainer {
+    max-height: 52vh;
+  }
+  .card {
+    height: 80vh  ;
+  }
+}
+/* height less than   600px */
+@media (max-height: 600px) {
+  .checklistContainer {
+    max-height: 50vh;
   }
 }
