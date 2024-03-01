@@ -31,30 +31,36 @@ export default function ViewTask() {
     fetchTask();
   }, [taskId]);
 
-  if (error) {
-    return <p>Task not Found</p>;
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.logo}>
-        <img src={logo} />
+        <img src={logo} alt='Logo' />
         Pro Manage
       </div>
 
       <div className={styles.card}>
         {loading ? (
           <p>Loading...</p>
+        ) : error ? (
+          <p className={styles.errorText}>
+            Task not found. Please check the URL and try again.
+          </p>
         ) : (
           <>
             <p className={styles.priority}>
               <Priority priority={task.priority} />
             </p>
-            <h2 className={styles.title}>{task.title}</h2>
+            <h2
+              className={styles.title}
+              title={task.title.length > 45 ? task.title : null}
+            >
+              {task.title.length > 45
+                ? `${task.title.substring(0, 45)}...`
+                : task.title}{' '}
+            </h2>
             <p className={styles.checklistText}>
-              Checklist:{' '}
-              {'(' + task.checklist.filter((item) => item.done).length}/
-              {task.checklist.length + ')'}
+              Checklist: {task.checklist.filter((item) => item.done).length}/
+              {task.checklist.length}
             </p>
             <div className={styles.checklistContainer}>
               {task.checklist.map((item, index) => (
@@ -64,7 +70,6 @@ export default function ViewTask() {
                       item.done ? `${styles.checked}` : ''
                     }`}
                   />
-
                   <p className={styles.checklistItemTextInput}>{item.text}</p>
                 </div>
               ))}
