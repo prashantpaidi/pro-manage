@@ -17,6 +17,12 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.error('MongoDB connection error:', error));
+
 app.get('/health', (req, res) => {
   const data = {
     uptime: process.uptime(),
@@ -49,11 +55,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  mongoose
-    .connect(process.env.MONGODB_URL)
-    .then(() =>
-      console.log(`Server running on http://localhost:${process.env.PORT}`)
-    )
-    .catch((error) => console.error(error));
-});
+// Only start server if not in serverless environment
+if (process.env.VERCEL !== '1') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;

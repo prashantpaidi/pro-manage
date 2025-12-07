@@ -99,48 +99,42 @@ const deleteTask = async (req, res) => {
 
 // Function to get analytics data
 const getTaskAnalytics = async (req, res) => {
+  const startTime = performance.now();
+  console.time('Analytics_Sequential_Time');
   try {
     const userId = req.params.userId;
 
-    // Get counts for different task types
-    const backlogCount = await Task.countDocuments({
-      user: userId,
-      taskType: 'Backlog',
-    });
-    const todoCount = await Task.countDocuments({
-      user: userId,
-      taskType: 'To do',
-    });
-    const inProgressCount = await Task.countDocuments({
-      user: userId,
-      taskType: 'In progress',
-    });
+    // Send analytics data as response
+    console.time('Analytics_Concurrent_Time');
+    const startTime = performance.now();
 
-    const doneCount = await Task.countDocuments({
-      user: userId,
-      taskType: 'Done',
-    });
+    const [
+      backlogCount,
+      todoCount,
+      inProgressCount,
+      doneCount,
+      dueDateTasks,
+      highPriorityCount,
+      moderatePriorityCount,
+      lowPriorityCount,
+    ] = await Promise.all([
+      Task.countDocuments({ user: userId, taskType: 'Backlog' }),
+      Task.countDocuments({ user: userId, taskType: 'To do' }),
+      Task.countDocuments({ user: userId, taskType: 'In progress' }),
+      Task.countDocuments({ user: userId, taskType: 'Done' }),
+      Task.countDocuments({
+        user: userId,
+        due_date: { $exists: true },
+        taskType: { $ne: 'Done' },
+      }),
+      Task.countDocuments({ user: userId, priority: 'HIGH PRIORITY' }),
+      Task.countDocuments({ user: userId, priority: 'MODERATE PRIORITY' }),
+      Task.countDocuments({ user: userId, priority: 'LOW PRIORITY' }),
+    ]);
 
-    // Get counts for tasks with due dates
-    const dueDateTasks = await Task.countDocuments({
-      user: userId,
-      due_date: { $exists: true },
-      taskType: { $ne: 'Done' },
-    });
-
-    // Get counts for tasks based on priority
-    const highPriorityCount = await Task.countDocuments({
-      user: userId,
-      priority: 'HIGH PRIORITY',
-    });
-    const moderatePriorityCount = await Task.countDocuments({
-      user: userId,
-      priority: 'MODERATE PRIORITY',
-    });
-    const lowPriorityCount = await Task.countDocuments({
-      user: userId,
-      priority: 'LOW PRIORITY',
-    });
+    console.timeEnd('Analytics_Concurrent_Time');
+    const endTime = performance.now();
+    console.log(`Analytics_Concurrent_Time: ${endTime - startTime}ms`);
 
     // Send analytics data as response
     res.json({
