@@ -1,31 +1,27 @@
 import PropTypes from 'prop-types';
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import TaskCard from '../Task/TaskCard';
 
 import CollapseAll from '../../assets/icons/collapseAll.svg';
 import Add from '../../assets/icons/add.svg';
 
-import { useTaskContext } from '../../context/taskContext';
+import { toggleTaskCollapse, selectTasksByType } from '../../store/slices/tasksSlice';
 
 import styles from './CardList.module.css';
 
-export default function CardList({ type }) {
+function CardList({ type }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { tasks, updateTasks } = useTaskContext();
-  
+  const tasks = useSelector(selectTasksByType(type), shallowEqual);
+
   const handleCollapseAll = () => {
-    updateTasks((prevState) => {
-      const updatedState = { ...prevState };
-      for (const taskType in updatedState) {
-        if (taskType === type) {
-          updatedState[taskType] = updatedState[taskType].map((item) => ({
-            ...item,
-            isCollapsed: true,
-          }));
-        }
+    tasks.forEach((task) => {
+      if (!task.isCollapsed) {
+        dispatch(toggleTaskCollapse({ taskId: task._id, taskType: type }));
       }
-      return updatedState;
     });
   };
 
@@ -41,7 +37,7 @@ export default function CardList({ type }) {
         <img src={CollapseAll} onClick={handleCollapseAll} />
       </div>
 
-      {tasks[type].map((task) => (
+      {tasks.map((task) => (
         <TaskCard key={task._id} task={task} />
       ))}
     </div>
@@ -51,3 +47,6 @@ export default function CardList({ type }) {
 CardList.propTypes = {
   type: PropTypes.string.isRequired,
 };
+
+// Memoize CardList to prevent re-renders when other columns change
+export default memo(CardList);
