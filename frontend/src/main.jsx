@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
 import { Toaster } from 'react-hot-toast';
-import { TaskProvider } from './context/taskContext';
+import { Provider } from 'react-redux';
+import store from './store/index.js';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <TaskProvider>
+    <Provider store={store}>
       <App />
-    </TaskProvider>
+    </Provider>
     <Toaster position='top-right' reverseOrder={false} />
   </React.StrictMode>
 );

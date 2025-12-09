@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 
 import optionsIcon from '../../assets/icons/options.svg';
@@ -8,17 +9,22 @@ import optionsIcon from '../../assets/icons/options.svg';
 import { listofTypes } from '../../utils/constants';
 import { formatDateMonD } from '../../utils/helpers';
 import { deleteTask, updateTask } from '../../apis/tasks';
+import {
+  deleteTaskAsync,
+  updateTaskTypeAsync,
+  updateChecklistAsync,
+  toggleTaskCollapse
+} from '../../store/slices/tasksSlice';
 
 import arrowDown from '../../assets/icons/arrowDown.svg';
 import arrowUp from '../../assets/icons/arrowUp.svg';
 
 import styles from './TaskCard.module.css';
 import Modal from '../UI/Modal';
-import { useTaskContext } from '../../context/taskContext';
 import Priority from '../UI/Priority';
 
-export default function TaskCard({ task }) {
-  const { tasks, updateTasks } = useTaskContext();
+function TaskCard({ task }) {
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
@@ -39,58 +45,20 @@ export default function TaskCard({ task }) {
   }, [task.due_date]);
 
   const handleToggleCollapse = () => {
-    // setTasksData((prevState) => {
-    //   return prevState.map((item) => {
-    //     if (item._id === task._id) {
-    //       return { ...item, isCollapsed: !item.isCollapsed };
-    //     }
-    //     return item;
-    //   });
-    // });
-
-    // console.log('task', task);
-    // console.log('tasks', tasks);
-
-    updateTasks((prevState) => {
-      return {
-        ...prevState,
-        [task.taskType]: prevState[task.taskType].map((item) => {
-          if (item._id === task._id) {
-            return { ...item, isCollapsed: !item.isCollapsed };
-          }
-          return item;
-        }),
-      };
-    });
+    dispatch(toggleTaskCollapse({ taskId: task._id, taskType: task.taskType }));
   };
 
   const handleCurrentTypeChange = async (currentType) => {
     try {
-      // Update task type in the database
-      await updateTask(task._id, { taskType: currentType });
-
-      // Update local state using updateTasks
-      updateTasks((prevState) => {
-        const updatedTasks = { ...prevState };
-        const index = updatedTasks[task.taskType].findIndex(
-          (item) => item._id === task._id
-        );
-
-        if (index !== -1) {
-          updatedTasks[task.taskType].splice(index, 1);
-
-          updatedTasks[currentType].push({ ...task, taskType: currentType });
-        }
-
-        return updatedTasks;
-      });
-
-      // Show success message
-      toast.success('Task type updated successfully');
+      // Dispatch optimistic update
+      await dispatch(updateTaskTypeAsync({
+        taskId: task._id,
+        newType: currentType,
+        task: task
+      })).unwrap();
     } catch (error) {
-      // Handle errors
       console.error('Error updating task type:', error);
-      toast.error('Error updating task type');
+      // Error toast is already shown by the thunk
     }
   };
 
@@ -114,21 +82,14 @@ export default function TaskCard({ task }) {
   };
 
   const handleDelete = async () => {
-    // Handle delete functionality
     try {
-      await deleteTask(task._id);
-      updateTasks((prevState) => {
-        return {
-          ...prevState,
-          [task.taskType]: prevState[task.taskType].filter(
-            (item) => item._id !== task._id
-          ),
-        };
-      });
-      toast.success('Task deleted successfully');
+      await dispatch(deleteTaskAsync({
+        taskId: task._id,
+        task: task
+      })).unwrap();
     } catch (error) {
       console.error('Error deleting task:', error);
-      toast.error('Error deleting task');
+      // Error toast is already shown by the thunk
     }
     setShowOptions(false);
   };
@@ -150,28 +111,21 @@ export default function TaskCard({ task }) {
 
   const handleChecklistCheckBoxChange = async (index) => {
     try {
-      const updatedChecklist = [...task.checklist];
-      updatedChecklist[index].done = !updatedChecklist[index].done;
+      // Deep clone the checklist to avoid mutating frozen Redux state
+      const updatedChecklist = task.checklist.map((item, i) => ({
+        ...item,
+        done: i === index ? !item.done : item.done
+      }));
 
-      // Update checklist in the database
-      await updateTask(task._id, { checklist: updatedChecklist });
-
-      updateTasks((prevState) => {
-        return {
-          ...prevState,
-          [task.taskType]: prevState[task.taskType].map((item) => {
-            if (item._id === task._id) {
-              return { ...item, checklist: updatedChecklist };
-            }
-            return item;
-          }),
-        };
-      });
-
-      toast.success('Checklist item updated successfully');
+      // Dispatch optimistic update
+      await dispatch(updateChecklistAsync({
+        taskId: task._id,
+        checklist: updatedChecklist,
+        task: task
+      })).unwrap();
     } catch (error) {
       console.error('Error updating checklist item:', error);
-      toast.error('Error updating checklist item');
+      // Error toast is already shown by the thunk
     }
   };
 
@@ -249,9 +203,8 @@ export default function TaskCard({ task }) {
           task.checklist.map((item, index) => (
             <div key={index} className={styles.checklistItem}>
               <div
-                className={`${styles.customCheckbox} ${
-                  item.done ? `${styles.checked}` : ''
-                }`}
+                className={`${styles.customCheckbox} ${item.done ? `${styles.checked}` : ''
+                  }`}
                 onClick={(e) => handleChecklistCheckBoxChange(index)}
               />
 
@@ -263,9 +216,8 @@ export default function TaskCard({ task }) {
       <div className={styles.taskDetailsContainer}>
         {task.due_date && (
           <p
-            className={`${styles.taskDueDate} ${
-              isDueDateExpired ? styles.redColorDate : ''
-            } ${task.taskType === 'Done' ? styles.greenColorDate : ''}`}
+            className={`${styles.taskDueDate} ${isDueDateExpired ? styles.redColorDate : ''
+              } ${task.taskType === 'Done' ? styles.greenColorDate : ''}`}
           >
             {formatDateMonD(task.due_date)}
           </p>
@@ -321,3 +273,7 @@ TaskCard.propTypes = {
   }).isRequired,
   // setTasksData: PropTypes.func.isRequired,
 };
+
+// Memoize TaskCard to prevent unnecessary re-renders
+// Only re-render if the task object reference changes
+export default memo(TaskCard);

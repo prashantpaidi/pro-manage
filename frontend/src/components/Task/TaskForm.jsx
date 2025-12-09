@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { createTask, updateTask } from '../../apis/tasks';
+import { createTaskAsync, updateTaskAsync } from '../../store/slices/tasksSlice';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { isLogin } from '../../utils/helpers';
@@ -12,11 +14,10 @@ import 'rsuite/dist/rsuite.min.css';
 
 import styles from './TaskForm.module.css';
 import toast from 'react-hot-toast';
-import { useTaskContext } from '../../context/taskContext';
 
 const TaskForm = () => {
   let navigate = useNavigate();
-  const { tasks, updateTasks } = useTaskContext();
+  const dispatch = useDispatch();
 
   const [user, setUser] = useState(null);
   const { state } = useLocation();
@@ -160,43 +161,26 @@ const TaskForm = () => {
     }
 
     try {
-      let newTaskData;
-
       if (edit) {
-        newTaskData = await updateTask(id, taskData);
-        newTaskData.isCollapsed = true;
-        console.log('Task updated successfully:', newTaskData);
-        // Update the state for the updated task
-        updateTasks((prevState) => {
-          const updatedState = { ...prevState };
-          for (const taskType in updatedState) {
-            updatedState[taskType] = updatedState[taskType].map((item) =>
-              item._id === newTaskData._id ? newTaskData : item
-            );
-          }
-          return updatedState;
-        });
+        // Update existing task with optimistic update
+        await dispatch(updateTaskAsync({
+          taskId: id,
+          updatedData: taskData,
+          previousTask: state.task
+        })).unwrap();
       } else {
-        newTaskData = await createTask(taskData, user.token);
-        newTaskData.isCollapsed = true;
-        console.log('Task created successfully:', newTaskData);
-        // Add the new task to the appropriate task type in the state
-        updateTasks((prevState) => {
-          const updatedState = { ...prevState };
-          updatedState[newTaskData.taskType] = [
-            ...updatedState[newTaskData.taskType],
-            newTaskData,
-          ];
-          return updatedState;
-        });
+        // Create new task with optimistic update
+        await dispatch(createTaskAsync({
+          taskData,
+          token: user.token
+        })).unwrap();
       }
 
-      toast.success('Task saved successfully.');
       // Navigate to the homepage after successful operation
       navigate('/');
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Internal Server Error. Please try again later.');
+      // Error toast is already shown by the thunk
     }
   };
 
@@ -233,11 +217,10 @@ const TaskForm = () => {
             />
             <label
               htmlFor='highPriority'
-              className={`${styles.taskSelectButton} ${
-                taskData.priority === 'HIGH PRIORITY'
-                  ? styles.activeTaskSelectButton
-                  : ''
-              }`}
+              className={`${styles.taskSelectButton} ${taskData.priority === 'HIGH PRIORITY'
+                ? styles.activeTaskSelectButton
+                : ''
+                }`}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -263,11 +246,10 @@ const TaskForm = () => {
             />
             <label
               htmlFor='moderatePriority'
-              className={`${styles.taskSelectButton} ${
-                taskData.priority === 'MODERATE PRIORITY'
-                  ? styles.activeTaskSelectButton
-                  : ''
-              }`}
+              className={`${styles.taskSelectButton} ${taskData.priority === 'MODERATE PRIORITY'
+                ? styles.activeTaskSelectButton
+                : ''
+                }`}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -293,11 +275,10 @@ const TaskForm = () => {
             />
             <label
               htmlFor='lowPriority'
-              className={`${styles.taskSelectButton} ${
-                taskData.priority === 'LOW PRIORITY'
-                  ? styles.activeTaskSelectButton
-                  : ''
-              }`}
+              className={`${styles.taskSelectButton} ${taskData.priority === 'LOW PRIORITY'
+                ? styles.activeTaskSelectButton
+                : ''
+                }`}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -328,9 +309,8 @@ const TaskForm = () => {
                 style={{ display: 'none' }}
               />
               <div
-                className={`${styles.customCheckbox} ${
-                  item.done ? `${styles.checked}` : ''
-                }`}
+                className={`${styles.customCheckbox} ${item.done ? `${styles.checked}` : ''
+                  }`}
                 onClick={(e) => handleChecklistCheckBoxChange(e, index)}
               />
 
