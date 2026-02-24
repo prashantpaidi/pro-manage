@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const connectDB = require('./config/db');
+
 var bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -17,11 +19,16 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URL)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((error) => console.error('MongoDB connection error:', error));
+// Middleware to ensure DB is connected before processing requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 app.get('/health', (req, res) => {
   const data = {

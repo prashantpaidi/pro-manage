@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
 });
+
+
+/// otp and expriy time
 
 module.exports = mongoose.model('User', userSchema);
